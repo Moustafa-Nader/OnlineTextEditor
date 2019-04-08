@@ -147,6 +147,7 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
             Logger.getLogger(ListenKeyTest.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.out.println(leftarrowcount);
 
     }
 
@@ -221,7 +222,7 @@ class serverHandler extends Thread {
                                 Thread.sleep(5);
                                 ListenKeyTest.typingArea.replaceSelection(send);
                             }
-                        }
+                        }                       
                         else
                         {
                             ListenKeyTest.shown.append(rec);
@@ -231,9 +232,12 @@ class serverHandler extends Thread {
                         }
                         break;
                     case 1:
+                        String received = dis.readUTF();
                         ListenKeyTest.typingArea.selectAll();
                         Thread.sleep(5);
-                        ListenKeyTest.typingArea.replaceSelection(dis.readUTF());
+                        ListenKeyTest.typingArea.replaceSelection(received);
+                        ListenKeyTest.shown = new StringBuilder(900*500);
+                        ListenKeyTest.shown.append(received);
                         break;
                         
                 }
