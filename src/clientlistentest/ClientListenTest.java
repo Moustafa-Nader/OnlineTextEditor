@@ -235,9 +235,12 @@ class serverHandler extends Thread {
                         }
                         break;
                     case 1:
+                        String received = dis.readUTF();
                         ClientListenTest.typingArea.selectAll();
                         Thread.sleep(5);
                         ClientListenTest.typingArea.replaceSelection(dis.readUTF());
+                        ClientListenTest.shown = new StringBuilder(900*500);
+                        ClientListenTest.shown.append(received);
                         break;
                         
                 }
