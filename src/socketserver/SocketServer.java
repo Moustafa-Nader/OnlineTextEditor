@@ -32,15 +32,15 @@ public class SocketServer {
             clients.add(i, new clientHandler(clientSocket, userData, serverData,i));
             clients.get(i).start();
             i++;
-        }
+            }
            /* catch(Exception e)
             {
                 clientSocket.close();
                 e.printStackTrace();
             }*/
-    }
+        }
 
-}
+    }
 
 
 
@@ -81,36 +81,36 @@ class clientHandler extends Thread
                         System.out.println(code);
                         for(int j=0;j<SocketServer.i;j++)
                         {
-                            if (this.num == j)
+                            if (this.num == j) 
                                 continue;
                             SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeChar(r);
                             SocketServer.clients.get(j).serverData.writeInt(code);
-
+                
                         }
-                        break;
+                    break;
                     case 1:
                         userText = userData.readUTF();
                         System.out.println(userText);
                         for(int j=0;j<SocketServer.i;j++)
                         {
-                            if (this.num == j)
+                            if (this.num == j) 
                                 continue;
                             SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeUTF(userText);
-
+                
                         }
-                        break;
+                    break;
                     case 27:
                         this.s.close();
                         System.out.println("Client: " + this.num + ", Closed Connection");
                         leaveLOOP = 0;
                         break;
-
+                                
                 }
-                if(leaveLOOP == 0)
-                    break;
-
+            if(leaveLOOP == 0)
+                break;
+                
             } catch (IOException ex) {
                 Logger.getLogger(clientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
