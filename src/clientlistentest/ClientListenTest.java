@@ -1,3 +1,4 @@
+
 package clientlistentest;
 
 import java.io.*;
@@ -23,14 +24,13 @@ import javax.swing.JTextArea;
 
 
 public class ClientListenTest extends JFrame implements KeyListener , ActionListener {
-    JTextArea typingArea;
+    public static JTextArea typingArea;
     static Socket ClientSocket;
     static DataOutputStream userData;
     static DataInputStream serverData;
-    static final String newline = System.getProperty("line.separator");
     int leftarrowcount = 0;
     String text = "";
-    StringBuilder shown = new StringBuilder(900*500);
+    public static StringBuilder shown = new StringBuilder(900*500);
 
     public static void main(String[] args) throws IOException {
 
@@ -67,7 +67,7 @@ public class ClientListenTest extends JFrame implements KeyListener , ActionList
         typingArea.setFocusTraversalKeysEnabled(false);
 
         getContentPane().add(typingArea, BorderLayout.PAGE_START);
-
+        
 
 
     }
@@ -99,11 +99,11 @@ public class ClientListenTest extends JFrame implements KeyListener , ActionList
             try {
                 userData.writeInt(code);
                 System.out.println("Connection Closed!");
-            } catch (IOException ex) {
-                Logger.getLogger(ClientListenTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (IOException ex) {
+            Logger.getLogger(ClientListenTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         else if(((code >= 32 && code <= 126) || code == 8 || code == 10) && code != 39 && code != 37)
-        {
+        {  
             try {
                 if(leftarrowcount > 0)
                 {
@@ -123,11 +123,11 @@ public class ClientListenTest extends JFrame implements KeyListener , ActionList
                         text = shown.toString();
                         userData.writeUTF(text);
                     }
-
-
+                    
+                
                 }
                 else if(code == 8)
-                {
+                { 
                     int zero = 0;
                     userData.writeInt(zero);
                     userData.writeChar(c);
@@ -144,8 +144,8 @@ public class ClientListenTest extends JFrame implements KeyListener , ActionList
                     System.out.println(c);
                     userData.writeInt(code);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(ClientListenTest.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientListenTest.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -180,12 +180,14 @@ class serverHandler extends Thread {
 
     final DataInputStream dis;
     final Socket s;
+    //JTextArea typingArea;
 
     public serverHandler(Socket s, DataInputStream dis)
     {
         System.out.println("New Connection");
         this.s = s;
         this.dis = dis;
+        //this.typingArea = ta;
     }
 
     @Override
@@ -199,13 +201,54 @@ class serverHandler extends Thread {
             //DataOutputStream dos = new DataOutputStream(s.getOutputStream());
             char rec;
             int code;
+            int flag;
+            int size;
+            //StringBuilder str = new StringBuilder(900*500);
+            String send = "";
             while (true)
-            {   rec = dis.readChar();
-                code = dis.readInt();
-                //System.out.println(rec);
-                //System.out.println(code);
+            {
+                flag = dis.readInt();
+                switch(flag)
+                {
+                    case 0:
+                        rec = dis.readChar();
+                        code = dis.readInt();
+                        //System.out.println(rec);
+                        System.out.println(code);
+                        if(code == 8){
+                            size = ClientListenTest.shown.length();
+                            if (size > 0) {
+                                ClientListenTest.shown.deleteCharAt(size - 1);
+                                send = "";
+                                send += ClientListenTest.shown;
+                                ClientListenTest.typingArea.selectAll();
+                                Thread.sleep(5);
+                                ClientListenTest.typingArea.replaceSelection(send);
+                            }
+                        }
+                        else
+                        {
+                            ClientListenTest.shown.append(rec);
+                            send = "";
+                            send += rec;
+                            ClientListenTest.typingArea.append(send);
+                        }
+                        break;
+                    case 1:
+                        ClientListenTest.typingArea.selectAll();
+                        Thread.sleep(5);
+                        ClientListenTest.typingArea.replaceSelection(dis.readUTF());
+                        break;
+                        
+                }
+                
+
             }
         } catch(Exception e){
             e.printStackTrace();
         }
-    }}
+    }
+}
+
+
+
