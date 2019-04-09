@@ -74,7 +74,7 @@ class clientHandler extends Thread
                 flag = userData.readInt();
                 switch(flag)
                 {
-                    case 0:
+                    /*case 0:
                         r = userData.readChar();
                         code = userData.readInt();
                         System.out.print(r);
@@ -89,6 +89,7 @@ class clientHandler extends Thread
 
                         }
                         break;
+                        */
                     case 1:
                         userText = userData.readUTF();
                         System.out.println(userText);
@@ -96,7 +97,7 @@ class clientHandler extends Thread
                         {
                             if (this.num == j)
                                 continue;
-                            SocketServer.clients.get(j).serverData.writeInt(flag);
+                            //SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeUTF(userText);
 
                         }

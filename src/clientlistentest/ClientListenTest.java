@@ -23,10 +23,11 @@ import javax.swing.JTextArea;
 
 
 public class ClientListenTest extends JFrame implements KeyListener , ActionListener {
-    JTextArea typingArea;
+    public static JTextArea typingArea;
     static Socket ClientSocket;
     static DataOutputStream userData;
     static DataInputStream serverData;
+    public static int code;
     static final String newline = System.getProperty("line.separator");
     int leftarrowcount = 0;
     String text = "";
@@ -89,8 +90,11 @@ public class ClientListenTest extends JFrame implements KeyListener , ActionList
     public void keyPressed(KeyEvent e) {
         //System.out.println(e.getKeyChar());
         char c = e.getKeyChar();
-        int code = e.getKeyCode();
-        int id = e.getID();
+        code = e.getKeyCode();
+        System.out.println(code);
+
+        }
+     /*   int id = e.getID();
         if(code == 37 && leftarrowcount < shown.length())
             leftarrowcount++;
         else if(code == 39 && leftarrowcount > 0)
@@ -147,12 +151,29 @@ public class ClientListenTest extends JFrame implements KeyListener , ActionList
             } catch (IOException ex) {
                 Logger.getLogger(ClientListenTest.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }*/
 
-    }
+
 
     @Override
     public void keyReleased(KeyEvent e) {
+
+        if((((code >= 32 && code <= 126) || code == 8 || code == 10) && code != 39 && code != 37&& code != 38 && code != 40)){
+            int one = 1;
+            try {
+
+                text = typingArea.getText();
+                userData.writeInt(one);
+                Thread.sleep(50);
+                userData.writeUTF(text);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+
+
+        }
 
     }
 
@@ -199,9 +220,14 @@ class serverHandler extends Thread {
             //DataOutputStream dos = new DataOutputStream(s.getOutputStream());
             char rec;
             int code;
+            String t;
             while (true)
-            {   rec = dis.readChar();
-                code = dis.readInt();
+            {   t = dis.readUTF();
+               ClientListenTest.typingArea.selectAll();
+                Thread.sleep(10);
+                ClientListenTest.typingArea.replaceSelection(t);
+                //rec = dis.readChar();
+                //code = dis.readInt();
                 //System.out.println(rec);
                 //System.out.println(code);
             }

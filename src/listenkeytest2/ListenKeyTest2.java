@@ -1,4 +1,4 @@
-package listenkeytest;
+package listenkeytest2;
 
 import java.io.*;
 import java.net.*;
@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 
-public class ListenKeyTest extends JFrame implements KeyListener , ActionListener {
+public class ListenKeyTest2 extends JFrame implements KeyListener , ActionListener {
     public static JTextArea typingArea;
 
     static Socket ClientSocket;
@@ -44,7 +44,7 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
     }
 
     private static void userGUI(){
-        ListenKeyTest frame = new ListenKeyTest("ListenKeyTest");
+        ListenKeyTest2 frame = new ListenKeyTest2("ListenKeyTest2");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addComponentsToPane();
@@ -117,7 +117,7 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
         typingArea.requestFocusInWindow();
     }
 
-    public ListenKeyTest(String name) {
+    public ListenKeyTest2(String name) {
         super(name);
     }
 
@@ -153,9 +153,9 @@ class serverHandler extends Thread {
             String t;
             while (true)
             {   t = dis.readUTF();
-                ListenKeyTest.typingArea.selectAll();
+                ListenKeyTest2.typingArea.selectAll();
                 Thread.sleep(10);
-                ListenKeyTest.typingArea.replaceSelection(t);
+                ListenKeyTest2.typingArea.replaceSelection(t);
                 //rec = dis.readChar();
                 //code = dis.readInt();
                 //System.out.println(rec);
