@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class SocketServer {
     public static int i=0;
     public static ArrayList<clientHandler> clients = new ArrayList<>(0);
-    public static String FilePath = " ";
+    public static String shown = "";
 
     public static void main(String[] args) throws IOException
     {
@@ -28,10 +28,18 @@ public class SocketServer {
             clientSocket = server.accept();
             DataInputStream userData = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverData = new DataOutputStream(clientSocket.getOutputStream());
+            
+            try {
+            serverData.writeUTF(shown);
+            } catch (IOException ex) {
+            //Logger.getLogger(clientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             clients.add(i, new clientHandler(clientSocket, userData, serverData,i));
+            System.out.println(shown);
             clients.get(i).start();
             i++;
+            
         }
            /* catch(Exception e)
             {
@@ -67,8 +75,9 @@ class clientHandler extends Thread
         char r;
         int code;
         int flag;
-        String userText;
+        String userText = "";
         int leaveLOOP = 1;
+        
         while(true){
             try {
                 flag = userData.readInt();
@@ -86,7 +95,6 @@ class clientHandler extends Thread
                             SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeChar(r);
                             SocketServer.clients.get(j).serverData.writeInt(code);
-
                         }
                         break;
                         */
@@ -99,6 +107,7 @@ class clientHandler extends Thread
                                 continue;
                             //SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeUTF(userText);
+                            SocketServer.shown = userText;
 
                         }
                         break;
@@ -109,11 +118,12 @@ class clientHandler extends Thread
                         break;
 
                 }
+                SocketServer.shown = userText;
                 if(leaveLOOP == 0)
                     break;
 
             } catch (IOException ex) {
-                Logger.getLogger(clientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(clientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try
@@ -127,4 +137,5 @@ class clientHandler extends Thread
         }
     }
 
+}
 }
