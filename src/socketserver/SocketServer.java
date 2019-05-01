@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class SocketServer {
     public static int i=0;
     public static ArrayList<clientHandler> clients = new ArrayList<>(0);
-    public static String FilePath = " ";
+    public static String shown = "";
 
     public static void main(String[] args) throws IOException
     {
@@ -23,37 +23,36 @@ public class SocketServer {
         while(true)
         {
             Socket clientSocket = null;
-            //try
-            //{
             clientSocket = server.accept();
             DataInputStream userData = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverData = new DataOutputStream(clientSocket.getOutputStream());
+            try {
+                serverData.writeUTF(shown);
+            } catch (IOException ex) {
 
+            }
             clients.add(i, new clientHandler(clientSocket, userData, serverData,i));
+            System.out.println(shown);
             clients.get(i).start();
             i++;
+
         }
-           /* catch(Exception e)
-            {
-                clientSocket.close();
-                e.printStackTrace();
-            }*/
+
+
     }
 
 }
 
 
 
-class clientHandler extends Thread
-{
+class clientHandler extends Thread {
     final DataInputStream userData;
     final DataOutputStream serverData;
     final Socket s;
     final int num;
 
 
-    public clientHandler(Socket s, DataInputStream dis, DataOutputStream dos, int num)
-    {
+    public clientHandler(Socket s, DataInputStream dis, DataOutputStream dos, int num) {
         this.num = num;
         System.out.println("New Connection");
         this.s = s;
@@ -62,18 +61,17 @@ class clientHandler extends Thread
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         char r;
         int code;
         int flag;
-        String userText;
+        String userText = "";
         int leaveLOOP = 1;
-        while(true){
+
+        while (true) {
             try {
                 flag = userData.readInt();
-                switch(flag)
-                {
+                switch (flag) {
                     /*case 0:
                         r = userData.readChar();
                         code = userData.readInt();
@@ -86,19 +84,18 @@ class clientHandler extends Thread
                             SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeChar(r);
                             SocketServer.clients.get(j).serverData.writeInt(code);
-
                         }
                         break;
                         */
                     case 1:
                         userText = userData.readUTF();
                         System.out.println(userText);
-                        for(int j=0;j<SocketServer.i;j++)
-                        {
+                        for (int j = 0; j < SocketServer.i; j++) {
                             if (this.num == j)
                                 continue;
                             //SocketServer.clients.get(j).serverData.writeInt(flag);
                             SocketServer.clients.get(j).serverData.writeUTF(userText);
+                            SocketServer.shown = userText;
 
                         }
                         break;
@@ -109,22 +106,22 @@ class clientHandler extends Thread
                         break;
 
                 }
-                if(leaveLOOP == 0)
+                SocketServer.shown = userText;
+                if (leaveLOOP == 0)
                     break;
 
             } catch (IOException ex) {
-                Logger.getLogger(clientHandler.class.getName()).log(Level.SEVERE, null, ex);
+
             }
         }
-        try
-        {
+        try {
             // closing resources
             this.userData.close();
             this.serverData.close();
 
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
+

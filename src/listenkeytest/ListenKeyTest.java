@@ -29,8 +29,8 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
     public  static  int code;
     static DataOutputStream userData;
     static DataInputStream serverData;
-    static final String newline = System.getProperty("line.separator");
-    public String shown = "";
+    public static String shown = "";
+    public static Thread t = null;
     String textt = "";
     public static void main(String[] args) throws IOException {
 
@@ -38,7 +38,7 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
 
         userGUI();
         createClientConnection();
-        Thread t = new Thread(new serverHandler(ClientSocket,serverData));
+        t = new Thread(new serverHandler(ClientSocket,serverData));
         t.start();
 
     }
@@ -54,7 +54,7 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
 
     private static void createClientConnection() throws IOException
     {
-        ClientSocket = new Socket("127.0.0.1",1337);
+        ClientSocket = new Socket("172.20.10.3",1337);
         userData = new DataOutputStream(ClientSocket.getOutputStream());
         serverData = new DataInputStream(ClientSocket.getInputStream());
     }
@@ -77,7 +77,7 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
             userData.writeChar(c);
             userData.writeInt(code);
         } catch (IOException ex) {
-            Logger.getLogger(ListenKeyTest.class.getName()).log(Level.SEVERE, null, ex);
+
         }
   */  }
 
@@ -86,7 +86,17 @@ public class ListenKeyTest extends JFrame implements KeyListener , ActionListene
         char c = e.getKeyChar();
         code = e.getKeyCode();
         System.out.println(code);
+        if(code == 27)
+            try {
+                userData.writeInt(code);
+                System.out.println("Connection Closed!");
+                this.ClientSocket.close();
+                this.userData.close();
+                this.serverData.close();
+                System.exit(0);
+            } catch (IOException ex) {
 
+            }
 
     }
 
@@ -154,7 +164,7 @@ class serverHandler extends Thread {
             while (true)
             {   t = dis.readUTF();
                 ListenKeyTest.typingArea.selectAll();
-                Thread.sleep(10);
+                Thread.sleep(5);
                 ListenKeyTest.typingArea.replaceSelection(t);
                 //rec = dis.readChar();
                 //code = dis.readInt();
@@ -166,7 +176,7 @@ class serverHandler extends Thread {
         }
     }}
        /* try
-        {   //Scanner scn = new Scanner(System.in);
+        {
             //InetAddress ip = InetAddress.getByName("localhost");
             //Socket s = new Socket(ip, 1337);
             //DataInputStream dis = new DataInputStream(s.getInputStream());
@@ -211,10 +221,7 @@ class serverHandler extends Thread {
                         Thread.sleep(5);
                         ListenKeyTest.typingArea.replaceSelection(dis.readUTF());
                         break;
-
                 }
-
-
             }
         } catch(Exception e){
             e.printStackTrace();
